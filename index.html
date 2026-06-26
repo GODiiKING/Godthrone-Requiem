@@ -1,238 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Play the greatest battle arena in the world">
-    <title>Godthrone</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Lexend+Exa:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="js/gamemanager.js"></script>
-    <script src="js/player.js"></script>
-    <script src="js/enemy.js"></script>
-</head>
-<body>
-        <!-- Centered button box -->
-        <div class="button-box">
-            <a href="browsergame.html" class="button-link">Enter Realm</a>
-        </div>
-    
-        <!-- Your scroll-to-top button remains -->
-        
-
-
-
-    <style>
-        /* Mobile Optimizations */
-        
-        /* Mobile phones (up to 767px) */
-        @media (max-width: 767px) {
-            body {
-                padding: 0;
-                -webkit-text-size-adjust: 100%;
-                -webkit-font-smoothing: antialiased;
-            }
-            
-            .header {
-                padding: 15px 10px;
-            }
-            
-            .header h2 {
-                font-size: 1.5em;
-                margin-bottom: 8px;
-            }
-            
-            .header p {
-                font-size: 1em;
-            }
-            
-            .content {
-                margin: 10px auto;
-                padding: 15px;
-            }
-            
-            .lore-section h3, 
-            .stat-section h3, 
-            .alignment-section h3 {
-                font-size: 1.4em;
-                margin-bottom: 12px;
-            }
-            
-            .lore-text, 
-            .alignment-section p, 
-            .stat-section p {
-                font-size: 14px;
-                line-height: 1.5;
-            }
-            
-            .container {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .text-1 {
-                flex: 1 1 100%;
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-            
-            .text-content img {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 12px;
-            }
-            
-            .text-details h3 {
-                font-size: 1.1em;
-                margin-bottom: 8px;
-            }
-            
-            .text-details p {
-                font-size: 0.85em;
-                line-height: 1.4;
-            }
-            
-            .alignment-section .container {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .alignment-section .text-1 {
-                padding: 12px;
-            }
-            
-            .alignment-section .text-content h3 {
-                font-size: 1.2em;
-                margin-bottom: 6px;
-            }
-            
-            .alignment-section .text-content p {
-                font-size: 0.85em;
-            }
-        }
-        
-        /* Small mobile phones (up to 480px) */
-        @media (max-width: 480px) {
-            .header {
-                padding: 12px 8px;
-            }
-            
-            .header h2 {
-                font-size: 1.3em;
-            }
-            
-            .header p {
-                font-size: 0.9em;
-            }
-            
-            .content {
-                padding: 12px;
-            }
-            
-            .lore-section h3, 
-            .stat-section h3, 
-            .alignment-section h3 {
-                font-size: 1.2em;
-            }
-            
-            .text-1 {
-                padding: 12px;
-            }
-            
-            .text-content img {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .text-details h3 {
-                font-size: 1em;
-            }
-            
-            .text-details p {
-                font-size: 0.8em;
-            }
-        }
-        
-        /* Tablets (768px to 1023px) */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .container {
-                gap: 18px;
-            }
-            
-            .text-1 {
-                flex: 1 1 calc(50% - 18px);
-            }
-            
-            .alignment-section .container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        /* Touch-friendly improvements for all mobile devices */
-        @media (max-width: 1023px) {
-            /* Make all clickable elements touch-friendly */
-            a, button {
-                min-height: 44px;
-                min-width: 44px;
-                -webkit-tap-highlight-color: transparent;
-                touch-action: manipulation;
-            }
-            
-            /* Improve text selection */
-            .text-1 {
-                -webkit-user-select: text;
-                -moz-user-select: text;
-                -ms-user-select: text;
-                user-select: text;
-            }
-            
-            /* Better hover effects for touch devices */
-            .text-1:hover {
-                transform: none;
-            }
-            
-            .text-1:active {
-                transform: scale(0.98);
-                transition: transform 0.1s;
-            }
-        }
-        
-        /* Landscape orientation adjustments */
-        @media (orientation: landscape) and (max-height: 500px) {
-            .header {
-                padding: 10px;
-            }
-            
-            .header h2 {
-                font-size: 1.4em;
-                margin-bottom: 5px;
-            }
-            
-            .content {
-                padding: 10px;
-            }
-        }
-        
-        /* Remove horizontal scrollbar */
-        @media (max-width: 1023px) {
-            html, body {
-                overflow-x: hidden;
-            }
-            
-            * {
-                max-width: 100%;
-            }
-        }
-    </style>
-
-
-    <!-- Link to external JavaScript file -->
-    <script src="script.js"></script>
-
-   
-    
-</body>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/controllericon.png"/>
+    <title>RPG - Dragon Repeller</title>
+  </head>
+  <body>
+    <div id="game">
+      <div id="stats">
+        <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
+        <span class="stat">Health: <strong><span id="healthText">100</span></strong></span>
+        <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
+      </div>
+      <div id="controls">
+        <button id="button1">Go to store</button>
+        <button id="button2">Go to cave</button>
+        <button id="button3">Fight dragon</button>
+      </div>
+      <div id="monsterStats">
+        <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
+        <span class="stat">Health: <strong><span id="monsterHealth"></span></strong></span>
+      </div>
+      <div id="text">
+        Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.
+      </div>
+    </div>
+    <script src="js/script.js"></script>
+  </body>
 </html>
