@@ -1,6 +1,6 @@
 # GodthroneQuest
 
-![GodthroneQuest](images/Godthronequest.png)
+![GodthroneQuest](images/godthronequest.png)
 
 Godthrone | Requiem is a lightweight browser text RPG.
 
