@@ -1,6 +1,6 @@
-# GodthroneQuest
+# Godthrone Requiem
 
-![GodthroneQuest](images/Godthronequest.png)
+![GodthroneQuest](images/Godthronrequiem.png)
 
 Godthrone | Requiem is a lightweight browser text RPG.
 
@@ -9,6 +9,3 @@ Godthrone | Requiem is a lightweight browser text RPG.
 ## 📄 License
 
 MIT — see LICENSE file (add one if missing).
-
----
-
