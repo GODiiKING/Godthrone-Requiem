@@ -31,27 +31,10 @@
   let clock = 0;
   let lastTime = performance.now();
 
-  function createPlayer(){
-    return {
-      type: 'player', name: 'Guardian', emoji: '🛡️', color: '#5dc8ff',
-      x: PLAYER_START.x, y: PLAYER_START.y,
-      hp: 100, maxHp: 100, atk: 18, def: 6, mag: 40, maxMag: 40, moveRange: 4,
-      moving: false, pathQueue: [], px: 0, py: 0, _onArrive: null
-    };
-  }
-
-  function createEnemy(){
-    return {
-      type: 'enemy', name: 'Fiend', emoji: '👹', color: '#ff5d5d',
-      x: ENEMY_START.x, y: ENEMY_START.y,
-      hp: 90, maxHp: 90, atk: 14, def: 5, mag: 0, maxMag: 0, moveRange: 3,
-      moving: false, pathQueue: [], px: 0, py: 0, _onArrive: null
-    };
-  }
-
   function rand(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
   function manhattan(a, b){ return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
   function isBusy(){ return player.moving || enemy.moving; }
+  
   function hexToRgba(hex, alpha){
     const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
     return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
@@ -166,40 +149,6 @@
     btnEndTurn.disabled = !myTurn;
   }
 
-  function drawUnit(u){
-    const isActive = !gameOver && ((turn === 'player' && u.type === 'player') || (turn === 'enemy' && u.type === 'enemy'));
-    if(isActive){
-      ctx.save();
-      ctx.beginPath();
-      const r = TILE*0.42 + 3*Math.sin(clock*5);
-      ctx.arc(u.px, u.py, r, 0, Math.PI*2);
-      ctx.strokeStyle = u.type === 'player' ? 'rgba(93,200,255,0.8)' : 'rgba(255,93,93,0.8)';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    ctx.beginPath();
-    ctx.arc(u.px, u.py, TILE*0.38, 0, Math.PI*2);
-    ctx.fillStyle = hexToRgba(u.color, 0.18);
-    ctx.fill();
-
-    ctx.font = '36px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(u.emoji, u.px, u.py + 2);
-
-    const barW = TILE*0.7, barH = 6;
-    const bx = u.px - barW/2, by = u.py - TILE*0.46;
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(bx, by, barW, barH);
-    const pct = Math.max(0, u.hp / u.maxHp);
-    ctx.fillStyle = pct > 0.5 ? '#4caf50' : pct > 0.25 ? '#ffb020' : '#e53935';
-    ctx.fillRect(bx, by, barW*pct, barH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.strokeRect(bx, by, barW, barH);
-  }
-
   function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -224,8 +173,9 @@
     for(let i=0;i<=COLS;i++){ ctx.beginPath(); ctx.moveTo(i*TILE,0); ctx.lineTo(i*TILE,ROWS*TILE); ctx.stroke(); }
     for(let j=0;j<=ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*TILE); ctx.lineTo(COLS*TILE,j*TILE); ctx.stroke(); }
 
-    drawUnit(enemy);
-    drawUnit(player);
+    const renderConfig = { TILE, clock, gameOver, turn, hexToRgba };
+    drawUnit(ctx, enemy, renderConfig);
+    drawUnit(ctx, player, renderConfig);
 
     floatingTexts.forEach(f => {
       ctx.save();
@@ -391,8 +341,8 @@
   });
 
   function init(){
-    player = createPlayer();
-    enemy = createEnemy();
+    player = createPlayer(PLAYER_START);
+    enemy = createEnemy(ENEMY_START);
     player.px = player.x*TILE + TILE/2; player.py = player.y*TILE + TILE/2;
     enemy.px = enemy.x*TILE + TILE/2; enemy.py = enemy.y*TILE + TILE/2;
     turn = 'player';
