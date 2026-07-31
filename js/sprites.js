@@ -1,41 +1,47 @@
 // ============================================================================
 // [SPRITE MODIFICATION MARKER 1]
 // UNIT DEFINITIONS & SPRITE ASSETS
-// Replace the emoji property with an image sprite if you want 2D artwork:
-// Example:
-//   const guardianSprite = new Image();
-//   guardianSprite.src = './images/guardian.png';
 // ============================================================================
 
-function createPlayer(startPos){
+// Preload sprite image assets using relative paths from your project root
+const playerSprite = new Image();
+playerSprite.src = './images/player/player.png';
+
+const enemySprite = new Image();
+enemySprite.src = './images/enemy/enemy.png';
+
+window.createPlayer = function(startPos){
   return {
     type: 'player', 
     name: 'Guardian', 
-    // [SPRITE MODIFICATION HERE] Swap emoji for: sprite: guardianSprite
-    emoji: '🛡️', 
+    sprite: playerSprite,
     color: '#5dc8ff',
     x: startPos.x, 
     y: startPos.y,
     hp: 100, maxHp: 100, atk: 18, def: 6, mag: 40, maxMag: 40, moveRange: 4,
     moving: false, pathQueue: [], px: 0, py: 0, _onArrive: null
   };
-}
+};
 
-function createEnemy(startPos){
+window.createEnemy = function(startPos){
   return {
     type: 'enemy', 
     name: 'Fiend', 
-    // [SPRITE MODIFICATION HERE] Swap emoji for: sprite: fiendSprite
-    emoji: '👹', 
+    sprite: enemySprite,
     color: '#ff5d5d',
     x: startPos.x, 
     y: startPos.y,
     hp: 90, maxHp: 90, atk: 14, def: 5, mag: 0, maxMag: 0, moveRange: 3,
     moving: false, pathQueue: [], px: 0, py: 0, _onArrive: null
   };
-}
+};
 
-function drawUnit(ctx, u, config){
+// ============================================================================
+// [SPRITE MODIFICATION MARKER 2]
+// RENDERING THE CHARACTER ON CANVAS
+// ============================================================================
+
+window.drawUnit = function(ctx, u, config){
   const { TILE, clock, gameOver, turn, hexToRgba } = config;
   const isActive = !gameOver && ((turn === 'player' && u.type === 'player') || (turn === 'enemy' && u.type === 'enemy'));
   
@@ -57,20 +63,17 @@ function drawUnit(ctx, u, config){
   ctx.fillStyle = hexToRgba(u.color, 0.18);
   ctx.fill();
 
-  // ============================================================================
-  // [SPRITE MODIFICATION MARKER 2]
-  // RENDERING THE CHARACTER ON CANVAS
-  // To draw a custom image sprite instead of text emoji, replace the 4 lines
-  // below with:
-  //
-  //   const size = TILE * 0.8;
-  //   ctx.drawImage(u.sprite, u.px - size/2, u.py - size/2, size, size);
-  // ============================================================================
-  ctx.font = '36px serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(u.emoji, u.px, u.py + 2);
-  // ============================================================================
+  // Draw 2D image sprite centered on the unit coordinates
+  const size = TILE * 0.85;
+  if(u.sprite && u.sprite.complete){
+    ctx.drawImage(u.sprite, u.px - size/2, u.py - size/2, size, size);
+  } else {
+    // Fallback loading indicator just in case the PNG is still fetching
+    ctx.font = '24px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⏳', u.px, u.py);
+  }
 
   // Draw health bar above unit
   const barW = TILE*0.7, barH = 6;
@@ -82,4 +85,4 @@ function drawUnit(ctx, u, config){
   ctx.fillRect(bx, by, barW*pct, barH);
   ctx.strokeStyle = 'rgba(255,255,255,0.3)';
   ctx.strokeRect(bx, by, barW, barH);
-}
+};
