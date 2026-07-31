@@ -1,675 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Godthrone: Requiem — Tactical Battle</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap');
-
-:root {
-  --bg-dark: #0b0810;
-  --panel-bg: #1a1424;
-  --panel-border: #3a2f4d;
-  --gold: #d4af6a;
-  --ember: #e0763a;
-  --blue: #5dc8ff;
-  --red: #ff5d5d;
-  --purple: #c77dff;
-  --text-main: #e8e0f0;
-  --text-muted: #9d8fb0;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: radial-gradient(ellipse at top, #1a1224 0%, #0b0810 60%);
-  color: var(--text-main);
-  font-family: Georgia, 'Times New Roman', serif;
-  display: flex;
-  justify-content: center;
-  padding: 24px 12px 60px;
-}
-
-.game-container { width: 100%; max-width: 900px; }
-
-h1 {
-  font-family: 'Cinzel', Georgia, serif;
-  text-align: center;
-  font-size: 2.1em;
-  margin: 0 0 4px;
-  letter-spacing: 2px;
-  background: linear-gradient(180deg, var(--gold), var(--ember));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 25px rgba(224,118,58,0.25);
-}
-
-.subtitle { text-align: center; color: var(--text-muted); font-size: 0.85em; margin: 0 0 16px; letter-spacing: 1px; }
-
-.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 18px; }
-.legend span { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 20px; padding: 4px 12px; font-size: 0.75em; color: var(--text-muted); }
-.legend strong { color: var(--gold); }
-
-.battle-area { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
-
-.canvas-frame {
-  position: relative;
-  border: 3px solid var(--gold);
-  border-radius: 6px;
-  background: #000;
-  animation: flicker 4s ease-in-out infinite alternate;
-  line-height: 0;
-}
-
-@keyframes flicker {
-  0% { box-shadow: 0 0 25px rgba(224,118,58,0.15); }
-  100% { box-shadow: 0 0 45px rgba(224,118,58,0.35); }
-}
-
-canvas { display: block; width: 100%; max-width: 512px; height: auto; }
-
-.side-panel { flex: 1 1 260px; max-width: 300px; display: flex; flex-direction: column; gap: 14px; }
-
-#turnIndicator {
-  text-align: center;
-  font-family: 'Cinzel', Georgia, serif;
-  font-size: 1.1em;
-  letter-spacing: 2px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid var(--panel-border);
-  background: var(--panel-bg);
-}
-
-.turn-player { color: var(--blue); text-shadow: 0 0 10px rgba(93,200,255,0.5); }
-.turn-enemy { color: var(--red); text-shadow: 0 0 10px rgba(255,93,93,0.5); }
-
-.stat-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px 12px; }
-.stat-card.player-card { border-left: 4px solid var(--blue); }
-.stat-card.enemy-card { border-left: 4px solid var(--red); }
-.stat-card h3 { margin: 0 0 8px; font-family: 'Cinzel', Georgia, serif; font-size: 0.95em; }
-
-.bar-row { margin-bottom: 6px; }
-.bar-label { display: flex; justify-content: space-between; font-size: 0.7em; color: var(--text-muted); margin-bottom: 2px; }
-.bar-bg { height: 10px; border-radius: 5px; background: #100c18; border: 1px solid var(--panel-border); overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 5px; transition: width 0.35s ease; }
-.hp-fill { background: linear-gradient(90deg, #7a2020, #e05353); }
-.mag-fill { background: linear-gradient(90deg, #3a3a8a, #7d5dff); }
-
-.mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; font-size: 0.72em; color: var(--text-muted); text-align: center; }
-.mini-stats div span { display: block; color: var(--text-main); font-size: 1.1em; }
-
-#distanceReadout { text-align: center; font-size: 0.75em; color: var(--text-muted); }
-
-.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-.action-btn {
-  font-family: 'Cinzel', Georgia, serif;
-  font-size: 0.78em;
-  letter-spacing: 1px;
-  padding: 10px 6px;
-  border-radius: 6px;
-  border: 1px solid var(--panel-border);
-  background: linear-gradient(180deg, #241b32, #16101f);
-  color: var(--text-main);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.action-btn:hover:not(:disabled) { border-color: var(--gold); box-shadow: 0 0 12px rgba(212,175,106,0.35); }
-.action-btn.active { border-color: var(--blue); box-shadow: 0 0 12px rgba(93,200,255,0.5); }
-.action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-#btnMagic { grid-column: 1 / -1; }
-#btnEndTurn { grid-column: 1 / -1; background: linear-gradient(180deg, #3a2a12, #241a0c); border-color: var(--ember); margin-top: 2px; }
-
-#log {
-  height: 130px;
-  overflow-y: auto;
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 0.75em;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-#log div { padding: 1px 0; }
-#log div:last-child { color: var(--text-main); }
-
-.overlay {
-  position: fixed; inset: 0;
-  background: rgba(5,3,8,0.88);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 50;
-}
-.overlay.hidden { display: none; }
-.overlay-box { text-align: center; }
-.overlay-box h2 { font-family: 'Cinzel', Georgia, serif; font-size: 3em; margin: 0 0 10px; letter-spacing: 4px; }
-.victory { color: var(--gold); text-shadow: 0 0 30px rgba(212,175,106,0.8); }
-.defeat { color: var(--red); text-shadow: 0 0 30px rgba(255,93,93,0.8); }
-.overlay-box p { color: var(--text-muted); margin-bottom: 20px; }
-
-#btnRestart {
-  font-family: 'Cinzel', Georgia, serif;
-  padding: 10px 28px;
-  border-radius: 6px;
-  border: 1px solid var(--gold);
-  background: linear-gradient(180deg, #3a2a12, #241a0c);
-  color: var(--gold);
-  cursor: pointer;
-  letter-spacing: 1px;
-}
-#btnRestart:hover { box-shadow: 0 0 15px rgba(212,175,106,0.5); }
-
-@media (max-width: 640px) {
-  .battle-area { flex-direction: column; align-items: center; }
-  .side-panel { max-width: 512px; width: 100%; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Godthrone: Requiem — Tactical Battle</title>
+  <link rel="stylesheet" href="./css/game.css" />
 </head>
 <body>
-<div class="game-container">
+  <div class="game-container">
 
-  <div class="legend">
-    <span><strong>Move</strong> up to 4 tiles</span>
-    <span><strong>Attack</strong> melee, range 1</span>
-    <span><strong>Arcane Bolt</strong> 15 MP · range 3</span>
-  </div>
-
-  <div class="battle-area">
-    <div class="canvas-frame">
-      <canvas id="grid" width="512" height="384"></canvas>
+    <div class="legend">
+      <span><strong>Move</strong> up to 4 tiles</span>
+      <span><strong>Attack</strong> melee, range 1</span>
+      <span><strong>Arcane Bolt</strong> 15 MP · range 3</span>
     </div>
 
-    <div class="side-panel">
-      <div id="turnIndicator">PLAYER TURN</div>
-
-      <div class="stat-card player-card">
-        <h3>🛡️ Player</h3>
-        <div class="bar-row">
-          <div class="bar-label"><span>HP</span><span id="playerHpText">100 / 100</span></div>
-          <div class="bar-bg"><div class="bar-fill hp-fill" id="playerHpFill" style="width:100%"></div></div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-label"><span>Magic</span><span id="playerMagText">40 / 40</span></div>
-          <div class="bar-bg"><div class="bar-fill mag-fill" id="playerMagFill" style="width:100%"></div></div>
-        </div>
-        <div class="mini-stats">
-          <div>ATK<span id="playerAtk">18</span></div>
-          <div>DEF<span id="playerDef">6</span></div>
-          <div>MOV<span id="playerMov">4</span></div>
-        </div>
+    <div class="battle-area">
+      <div class="canvas-frame">
+        <canvas id="grid" width="512" height="384"></canvas>
       </div>
 
-      <div class="stat-card enemy-card">
-        <h3>👹 Enemy</h3>
-        <div class="bar-row">
-          <div class="bar-label"><span>HP</span><span id="enemyHpText">90 / 90</span></div>
-          <div class="bar-bg"><div class="bar-fill hp-fill" id="enemyHpFill" style="width:100%"></div></div>
+      <div class="side-panel">
+        <div id="turnIndicator">PLAYER TURN</div>
+
+        <div class="stat-card player-card">
+          <h3>🛡️ Player</h3>
+          <div class="bar-row">
+            <div class="bar-label"><span>HP</span><span id="playerHpText">100 / 100</span></div>
+            <div class="bar-bg"><div class="bar-fill hp-fill" id="playerHpFill" style="width:100%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span>Magic</span><span id="playerMagText">40 / 40</span></div>
+            <div class="bar-bg"><div class="bar-fill mag-fill" id="playerMagFill" style="width:100%"></div></div>
+          </div>
+          <div class="mini-stats">
+            <div>ATK<span id="playerAtk">18</span></div>
+            <div>DEF<span id="playerDef">6</span></div>
+            <div>MOV<span id="playerMov">4</span></div>
+          </div>
         </div>
-        <div class="mini-stats">
-          <div>ATK<span id="enemyAtk">14</span></div>
-          <div>DEF<span id="enemyDef">5</span></div>
-          <div>MOV<span id="enemyMov">3</span></div>
+
+        <div class="stat-card enemy-card">
+          <h3>👹 Enemy</h3>
+          <div class="bar-row">
+            <div class="bar-label"><span>HP</span><span id="enemyHpText">90 / 90</span></div>
+            <div class="bar-bg"><div class="bar-fill hp-fill" id="enemyHpFill" style="width:100%"></div></div>
+          </div>
+          <div class="mini-stats">
+            <div>ATK<span id="enemyAtk">14</span></div>
+            <div>DEF<span id="enemyDef">5</span></div>
+            <div>MOV<span id="enemyMov">3</span></div>
+          </div>
         </div>
+
+        <div id="distanceReadout">Distance to Enemy: —</div>
+
+        <div class="actions">
+          <button class="action-btn" id="btnMove" title="Move up to your Movement Range">Move</button>
+          <button class="action-btn" id="btnAttack" title="Melee attack, requires adjacency">Attack</button>
+          <button class="action-btn" id="btnMagic" title="Arcane Bolt — 15 MP, range 3">Magic</button>
+          <button class="action-btn" id="btnEndTurn" title="End your turn">End Turn</button>
+        </div>
+
+        <div id="log"></div>
       </div>
-
-      <div id="distanceReadout">Distance to Enemy: —</div>
-
-      <div class="actions">
-        <button class="action-btn" id="btnMove" title="Move up to your Movement Range">Move</button>
-        <button class="action-btn" id="btnAttack" title="Melee attack, requires adjacency">Attack</button>
-        <button class="action-btn" id="btnMagic" title="Arcane Bolt — 15 MP, range 3">Magic</button>
-        <button class="action-btn" id="btnEndTurn" title="End your turn">End Turn</button>
-      </div>
-
-      <div id="log"></div>
     </div>
   </div>
-</div>
 
-<div class="overlay hidden" id="overlay">
-  <div class="overlay-box">
-    <h2 id="overlayTitle">VICTORY</h2>
-    <p id="overlayText">You have vanquished your foe.</p>
-    <button id="btnRestart">Restart Battle</button>
+  <div class="overlay hidden" id="overlay">
+    <div class="overlay-box">
+      <h2 id="overlayTitle">VICTORY</h2>
+      <p id="overlayText">You have vanquished your foe.</p>
+      <button id="btnRestart">Restart Battle</button>
+    </div>
   </div>
-</div>
 
-<script>
-(function(){
-  const COLS = 8, ROWS = 6, TILE = 64;
-  const PLAYER_START = { x: 1, y: 4 };
-  const ENEMY_START = { x: 6, y: 1 };
-  const SPELL_COST = 15, SPELL_RANGE = 3, SPELL_POWER = 28;
-
-  const canvas = document.getElementById('grid');
-  const ctx = canvas.getContext('2d');
-
-  const turnIndicator = document.getElementById('turnIndicator');
-  const playerHpFill = document.getElementById('playerHpFill');
-  const playerHpText = document.getElementById('playerHpText');
-  const playerMagFill = document.getElementById('playerMagFill');
-  const playerMagText = document.getElementById('playerMagText');
-  const enemyHpFill = document.getElementById('enemyHpFill');
-  const enemyHpText = document.getElementById('enemyHpText');
-  const distanceReadout = document.getElementById('distanceReadout');
-  const btnMove = document.getElementById('btnMove');
-  const btnAttack = document.getElementById('btnAttack');
-  const btnMagic = document.getElementById('btnMagic');
-  const btnEndTurn = document.getElementById('btnEndTurn');
-  const logEl = document.getElementById('log');
-  const overlay = document.getElementById('overlay');
-  const overlayTitle = document.getElementById('overlayTitle');
-  const overlayText = document.getElementById('overlayText');
-  const btnRestart = document.getElementById('btnRestart');
-
-  let player, enemy, turn, mode, hasMovedThisTurn, hasActedThisTurn, gameOver;
-  let reachable = new Map();
-  let floatingTexts = [];
-  let clock = 0;
-  let lastTime = performance.now();
-
-  function createPlayer(){
-    return {
-      type: 'player', name: 'Guardian', emoji: '🛡️', color: '#5dc8ff',
-      x: PLAYER_START.x, y: PLAYER_START.y,
-      hp: 100, maxHp: 100, atk: 18, def: 6, mag: 40, maxMag: 40, moveRange: 4,
-      moving: false, pathQueue: [], px: 0, py: 0, _onArrive: null
-    };
-  }
-
-  function createEnemy(){
-    return {
-      type: 'enemy', name: 'Fiend', emoji: '👹', color: '#ff5d5d',
-      x: ENEMY_START.x, y: ENEMY_START.y,
-      hp: 90, maxHp: 90, atk: 14, def: 5, mag: 0, maxMag: 0, moveRange: 3,
-      moving: false, pathQueue: [], px: 0, py: 0, _onArrive: null
-    };
-  }
-
-  function rand(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
-  function manhattan(a, b){ return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
-  function isBusy(){ return player.moving || enemy.moving; }
-  function hexToRgba(hex, alpha){
-    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-  }
-
-  function getReachableTiles(startX, startY, range, blocked){
-    const key = (x,y) => x + ',' + y;
-    const start = { x: startX, y: startY, dist: 0, prev: null };
-    const visited = new Map();
-    visited.set(key(startX,startY), start);
-    const queue = [start];
-    let qi = 0;
-    while(qi < queue.length){
-      const cur = queue[qi++];
-      if(cur.dist >= range) continue;
-      const deltas = [[1,0],[-1,0],[0,1],[0,-1]];
-      for(const [dx,dy] of deltas){
-        const nx = cur.x + dx, ny = cur.y + dy;
-        if(nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) continue;
-        if(blocked.some(b => b.x === nx && b.y === ny)) continue;
-        const k = key(nx,ny);
-        if(visited.has(k)) continue;
-        const node = { x: nx, y: ny, dist: cur.dist + 1, prev: cur };
-        visited.set(k, node);
-        queue.push(node);
-      }
-    }
-    return visited;
-  }
-
-  function reconstructPath(node){
-    const path = [];
-    let n = node;
-    while(n && n.prev){ path.unshift({ x: n.x, y: n.y }); n = n.prev; }
-    return path;
-  }
-
-  function startMove(unit, path, onDone){
-    if(path.length === 0){ if(onDone) onDone(); return; }
-    unit.pathQueue = path.slice();
-    unit.moving = true;
-    unit._onArrive = onDone;
-  }
-
-  function updateMovement(dt){
-    [player, enemy].forEach(u => {
-      if(u.moving && u.pathQueue.length > 0){
-        const wp = u.pathQueue[0];
-        const targetPx = wp.x * TILE + TILE/2, targetPy = wp.y * TILE + TILE/2;
-        const dx = targetPx - u.px, dy = targetPy - u.py;
-        const dist = Math.hypot(dx, dy);
-        const speed = TILE / 0.18;
-        const step = speed * dt;
-        if(dist <= step){
-          u.px = targetPx; u.py = targetPy; u.x = wp.x; u.y = wp.y;
-          u.pathQueue.shift();
-          if(u.pathQueue.length === 0){
-            u.moving = false;
-            const cb = u._onArrive; u._onArrive = null;
-            if(cb) cb();
-          }
-        } else {
-          u.px += dx/dist*step;
-          u.py += dy/dist*step;
-        }
-      }
-    });
-  }
-
-  function spawnFloatingText(gx, gy, text, color){
-    floatingTexts.push({ x: gx*TILE + TILE/2, y: gy*TILE + TILE/2 - 10, text, color, life: 1.0, vy: -40 });
-  }
-
-  function updateFloatingTexts(dt){
-    for(let i = floatingTexts.length - 1; i >= 0; i--){
-      const f = floatingTexts[i];
-      f.y += f.vy * dt;
-      f.life -= dt * 1.1;
-      if(f.life <= 0) floatingTexts.splice(i,1);
-    }
-  }
-
-  function addLog(msg){
-    const p = document.createElement('div');
-    p.textContent = msg;
-    logEl.appendChild(p);
-    logEl.scrollTop = logEl.scrollHeight;
-    while(logEl.children.length > 60) logEl.removeChild(logEl.firstChild);
-  }
-
-  function updateUI(){
-    turnIndicator.textContent = gameOver ? 'BATTLE OVER' : (turn === 'player' ? 'PLAYER TURN' : 'ENEMY TURN');
-    turnIndicator.className = turn === 'player' ? 'turn-player' : 'turn-enemy';
-
-    playerHpFill.style.width = Math.max(0, 100 * player.hp / player.maxHp) + '%';
-    playerHpText.textContent = player.hp + ' / ' + player.maxHp;
-    playerMagFill.style.width = Math.max(0, 100 * player.mag / player.maxMag) + '%';
-    playerMagText.textContent = player.mag + ' / ' + player.maxMag;
-
-    enemyHpFill.style.width = Math.max(0, 100 * enemy.hp / enemy.maxHp) + '%';
-    enemyHpText.textContent = enemy.hp + ' / ' + enemy.maxHp;
-
-    const dist = manhattan(player, enemy);
-    distanceReadout.textContent = 'Distance to ' + enemy.name + ': ' + dist;
-
-    const busy = isBusy();
-    const myTurn = turn === 'player' && !gameOver && !busy;
-    btnMove.disabled = !myTurn || hasMovedThisTurn;
-    btnMove.classList.toggle('active', mode === 'selectMove');
-    btnAttack.disabled = !myTurn || hasActedThisTurn || dist > 1;
-    btnMagic.disabled = !myTurn || hasActedThisTurn || dist > SPELL_RANGE || player.mag < SPELL_COST;
-    btnEndTurn.disabled = !myTurn;
-  }
-
-  function drawUnit(u){
-    const isActive = !gameOver && ((turn === 'player' && u.type === 'player') || (turn === 'enemy' && u.type === 'enemy'));
-    if(isActive){
-      ctx.save();
-      ctx.beginPath();
-      const r = TILE*0.42 + 3*Math.sin(clock*5);
-      ctx.arc(u.px, u.py, r, 0, Math.PI*2);
-      ctx.strokeStyle = u.type === 'player' ? 'rgba(93,200,255,0.8)' : 'rgba(255,93,93,0.8)';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    ctx.beginPath();
-    ctx.arc(u.px, u.py, TILE*0.38, 0, Math.PI*2);
-    ctx.fillStyle = hexToRgba(u.color, 0.18);
-    ctx.fill();
-
-    ctx.font = '36px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(u.emoji, u.px, u.py + 2);
-
-    const barW = TILE*0.7, barH = 6;
-    const bx = u.px - barW/2, by = u.py - TILE*0.46;
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(bx, by, barW, barH);
-    const pct = Math.max(0, u.hp / u.maxHp);
-    ctx.fillStyle = pct > 0.5 ? '#4caf50' : pct > 0.25 ? '#ffb020' : '#e53935';
-    ctx.fillRect(bx, by, barW*pct, barH);
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.strokeRect(bx, by, barW, barH);
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    for(let gy=0; gy<ROWS; gy++){
-      for(let gx=0; gx<COLS; gx++){
-        ctx.fillStyle = (gx+gy)%2===0 ? '#1c1626' : '#221a30';
-        ctx.fillRect(gx*TILE, gy*TILE, TILE, TILE);
-      }
-    }
-
-    if(mode === 'selectMove'){
-      reachable.forEach((node) => {
-        if(node.dist === 0) return;
-        ctx.fillStyle = 'rgba(93,200,255,0.22)';
-        ctx.fillRect(node.x*TILE, node.y*TILE, TILE, TILE);
-        ctx.strokeStyle = 'rgba(93,200,255,0.6)';
-        ctx.strokeRect(node.x*TILE+1, node.y*TILE+1, TILE-2, TILE-2);
-      });
-    }
-
-    ctx.strokeStyle = 'rgba(120,100,150,0.2)';
-    for(let i=0;i<=COLS;i++){ ctx.beginPath(); ctx.moveTo(i*TILE,0); ctx.lineTo(i*TILE,ROWS*TILE); ctx.stroke(); }
-    for(let j=0;j<=ROWS;j++){ ctx.beginPath(); ctx.moveTo(0,j*TILE); ctx.lineTo(COLS*TILE,j*TILE); ctx.stroke(); }
-
-    drawUnit(enemy);
-    drawUnit(player);
-
-    floatingTexts.forEach(f => {
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, f.life);
-      ctx.fillStyle = f.color;
-      ctx.font = 'bold 20px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(f.text, f.x, f.y);
-      ctx.restore();
-    });
-  }
-
-  function getTileFromEvent(e){
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
-    return { gx: Math.floor(mx / TILE), gy: Math.floor(my / TILE) };
-  }
-
-  function checkGameOver(){
-    if(gameOver) return;
-    if(enemy.hp <= 0){ gameOver = true; showGameOver(true); }
-    else if(player.hp <= 0){ gameOver = true; showGameOver(false); }
-  }
-
-  function showGameOver(won){
-    overlay.classList.remove('hidden');
-    overlayTitle.textContent = won ? 'VICTORY' : 'DEFEAT';
-    overlayTitle.className = won ? 'victory' : 'defeat';
-    overlayText.textContent = won ? ('You have vanquished the ' + enemy.name + '.') : ('You have fallen before the ' + enemy.name + '.');
-    updateUI();
-  }
-
-  function doEnemyAttack(){
-    const dmg = Math.max(1, enemy.atk - player.def + rand(-2,2));
-    player.hp = Math.max(0, player.hp - dmg);
-    spawnFloatingText(player.x, player.y, '-' + dmg, '#ff6b6b');
-    addLog('The ' + enemy.name + ' claws at you for ' + dmg + ' damage!');
-    updateUI();
-    checkGameOver();
-    if(!gameOver) setTimeout(endEnemyTurn, 500);
-  }
-
-  function endEnemyTurn(){
-    if(gameOver) return;
-    turn = 'player';
-    hasMovedThisTurn = false;
-    hasActedThisTurn = false;
-    addLog('— Player turn —');
-    updateUI();
-  }
-
-  function enemyTurn(){
-    if(gameOver || turn !== 'enemy') return;
-    const dist = manhattan(player, enemy);
-    if(dist <= 1){
-      doEnemyAttack();
-      return;
-    }
-    const reach = getReachableTiles(enemy.x, enemy.y, enemy.moveRange, [{x:player.x,y:player.y}]);
-    let best = null;
-    for(const node of reach.values()){
-      const d = Math.abs(node.x - player.x) + Math.abs(node.y - player.y);
-      if(!best || d < best.d || (d === best.d && node.dist < best.node.dist)){
-        best = { d, node };
-      }
-    }
-    const path = best ? reconstructPath(best.node) : [];
-    if(path.length === 0){
-      addLog('The ' + enemy.name + ' holds its ground.');
-      endEnemyTurn();
-      return;
-    }
-    addLog('The ' + enemy.name + ' closes the distance.');
-    startMove(enemy, path, () => {
-      if(manhattan(player, enemy) <= 1){ doEnemyAttack(); }
-      else { endEnemyTurn(); }
-    });
-    updateUI();
-  }
-
-  btnMove.addEventListener('click', () => {
-    if(turn !== 'player' || gameOver || isBusy() || hasMovedThisTurn) return;
-    if(mode === 'selectMove'){
-      mode = 'idle';
-    } else {
-      mode = 'selectMove';
-      reachable = getReachableTiles(player.x, player.y, player.moveRange, [{x:enemy.x,y:enemy.y}]);
-    }
-    updateUI();
-    draw();
-  });
-
-  btnAttack.addEventListener('click', () => {
-    if(turn !== 'player' || gameOver || isBusy() || hasActedThisTurn) return;
-    const dist = manhattan(player, enemy);
-    if(dist > 1){ addLog('The enemy is too far away to strike.'); return; }
-    const dmg = Math.max(1, player.atk - enemy.def + rand(-2,2));
-    enemy.hp = Math.max(0, enemy.hp - dmg);
-    spawnFloatingText(enemy.x, enemy.y, '-' + dmg, '#ff6b6b');
-    addLog('You strike the ' + enemy.name + ' for ' + dmg + ' damage!');
-    hasActedThisTurn = true;
-    updateUI();
-    checkGameOver();
-  });
-
-  btnMagic.addEventListener('click', () => {
-    if(turn !== 'player' || gameOver || isBusy() || hasActedThisTurn) return;
-    if(player.mag < SPELL_COST){ addLog('You lack the magic required to cast Arcane Bolt.'); return; }
-    const dist = manhattan(player, enemy);
-    if(dist > SPELL_RANGE){ addLog("The enemy is beyond your spell's reach."); return; }
-    player.mag -= SPELL_COST;
-    const dmg = Math.max(1, SPELL_POWER - enemy.def + rand(-2,2));
-    enemy.hp = Math.max(0, enemy.hp - dmg);
-    spawnFloatingText(enemy.x, enemy.y, '-' + dmg, '#c77dff');
-    addLog('You unleash Arcane Bolt on the ' + enemy.name + ' for ' + dmg + ' damage!');
-    hasActedThisTurn = true;
-    updateUI();
-    checkGameOver();
-  });
-
-  btnEndTurn.addEventListener('click', () => {
-    if(turn !== 'player' || gameOver || isBusy()) return;
-    mode = 'idle';
-    turn = 'enemy';
-    addLog('— Enemy turn —');
-    updateUI();
-    draw();
-    setTimeout(enemyTurn, 500);
-  });
-
-  btnRestart.addEventListener('click', init);
-
-  canvas.addEventListener('click', (e) => {
-    if(mode !== 'selectMove' || turn !== 'player' || gameOver) return;
-    const { gx, gy } = getTileFromEvent(e);
-    if(gx < 0 || gx >= COLS || gy < 0 || gy >= ROWS) return;
-    const key = gx + ',' + gy;
-    if(!reachable.has(key)) return;
-    if(gx === player.x && gy === player.y){ mode = 'idle'; updateUI(); draw(); return; }
-    const node = reachable.get(key);
-    const path = reconstructPath(node);
-    mode = 'idle';
-    hasMovedThisTurn = true;
-    addLog('You move to a new position.');
-    startMove(player, path, () => { updateUI(); });
-    updateUI();
-    draw();
-  });
-
-  canvas.addEventListener('mousemove', (e) => {
-    if(mode !== 'selectMove'){ canvas.style.cursor = 'default'; return; }
-    const { gx, gy } = getTileFromEvent(e);
-    const key = gx + ',' + gy;
-    const valid = reachable.has(key) && !(gx === player.x && gy === player.y);
-    canvas.style.cursor = valid ? 'pointer' : 'default';
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape' && mode === 'selectMove'){ mode = 'idle'; updateUI(); draw(); }
-  });
-
-  function init(){
-    player = createPlayer();
-    enemy = createEnemy();
-    player.px = player.x*TILE + TILE/2; player.py = player.y*TILE + TILE/2;
-    enemy.px = enemy.x*TILE + TILE/2; enemy.py = enemy.y*TILE + TILE/2;
-    turn = 'player';
-    mode = 'idle';
-    hasMovedThisTurn = false;
-    hasActedThisTurn = false;
-    gameOver = false;
-    floatingTexts = [];
-    reachable = new Map();
-    logEl.innerHTML = '';
-    overlay.classList.add('hidden');
-    addLog('The battle begins. Choose your move, warrior.');
-    updateUI();
-    draw();
-  }
-
-  function loop(now){
-    const dt = Math.min(0.05, (now - lastTime) / 1000);
-    lastTime = now;
-    clock += dt;
-    updateMovement(dt);
-    updateFloatingTexts(dt);
-    draw();
-    requestAnimationFrame(loop);
-  }
-
-  init();
-  requestAnimationFrame(loop);
-})();
-</script>
+  <script src="./js/game.js"></script>
 </body>
 </html>
-
