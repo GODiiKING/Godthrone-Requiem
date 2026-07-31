@@ -1,0 +1,52 @@
+/* ===========================
+   Action Buttons
+   =========================== */
+
+/* Actions Grid */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Base Button */
+.action-btn {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.78em;
+  letter-spacing: 1px;
+  padding: 10px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: linear-gradient(180deg, #241b32, #16101f);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+/* Hover / Active / Disabled */
+.action-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(212,175,106,0.35);
+}
+
+.action-btn.active {
+  border-color: var(--blue);
+  box-shadow: 0 0 12px rgba(93,200,255,0.5);
+}
+
+.action-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Special Buttons */
+#btnMagic {
+  grid-column: 1 / -1;
+}
+
+#btnEndTurn {
+  grid-column: 1 / -1;
+  background: linear-gradient(180deg, #3a2a12, #241a0c);
+  border-color: var(--ember);
+  margin-top: 2px;
+}

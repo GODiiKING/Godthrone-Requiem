@@ -1,0 +1,78 @@
+/* ===========================
+   Layout & Structure
+   =========================== */
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.legend span {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.75em;
+  color: var(--text-muted);
+}
+
+.legend strong {
+  color: var(--gold);
+}
+
+/* Battle Area Layout */
+.battle-area {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Canvas Frame */
+.canvas-frame {
+  position: relative;
+  border: 3px solid var(--gold);
+  border-radius: 6px;
+  background: #000;
+  animation: flicker 4s ease-in-out infinite alternate;
+  line-height: 0;
+}
+
+@keyframes flicker {
+  0% { box-shadow: 0 0 25px rgba(224,118,58,0.15); }
+  100% { box-shadow: 0 0 45px rgba(224,118,58,0.35); }
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  max-width: 512px;
+  height: auto;
+}
+
+/* Side Panel */
+.side-panel {
+  flex: 1 1 260px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .battle-area {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .side-panel {
+    max-width: 512px;
+    width: 100%;
+  }
+}

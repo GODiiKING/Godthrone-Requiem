@@ -1,0 +1,42 @@
+/* ===========================
+   Base Styles
+   =========================== */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #1a1224 0%, #0b0810 60%);
+  color: var(--text-main);
+  font-family: Georgia, 'Times New Roman', serif;
+  display: flex;
+  justify-content: center;
+  padding: 24px 12px 60px;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Headings */
+h1 {
+  font-family: 'Cinzel', Georgia, serif;
+  text-align: center;
+  font-size: 2.1em;
+  margin: 0 0 4px;
+  letter-spacing: 2px;
+  background: linear-gradient(180deg, var(--gold), var(--ember));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 25px rgba(224,118,58,0.25);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  margin: 0 0 16px;
+  letter-spacing: 1px;
+}

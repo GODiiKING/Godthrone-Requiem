@@ -1,0 +1,61 @@
+/* ===========================
+   Battle Overlay (Victory / Defeat)
+   =========================== */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,3,8,0.88);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-box {
+  text-align: center;
+}
+
+.overlay-box h2 {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 3em;
+  margin: 0 0 10px;
+  letter-spacing: 4px;
+}
+
+.victory {
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(212,175,106,0.8);
+}
+
+.defeat {
+  color: var(--red);
+  text-shadow: 0 0 30px rgba(255,93,93,0.8);
+}
+
+.overlay-box p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* Restart Button */
+#btnRestart {
+  font-family: 'Cinzel', Georgia, serif;
+  padding: 10px 28px;
+  border-radius: 6px;
+  border: 1px solid var(--gold);
+  background: linear-gradient(180deg, #3a2a12, #241a0c);
+  color: var(--gold);
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+#btnRestart:hover {
+  box-shadow: 0 0 15px rgba(212,175,106,0.5);
+}

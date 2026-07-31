@@ -1,0 +1,23 @@
+/* ===========================
+   Theme Variables
+   =========================== */
+
+:root {
+  --bg-dark: #0b0810;
+  --panel-bg: #1a1424;
+  --panel-border: #3a2f4d;
+
+  --gold: #d4af6a;
+  --ember: #e0763a;
+  --blue: #5dc8ff;
+  --red: #ff5d5d;
+  --purple: #c77dff;
+
+  --text-main: #e8e0f0;
+  --text-muted: #9d8fb0;
+}
+
+/* Global box model */
+* {
+  box-sizing: border-box;
+}
